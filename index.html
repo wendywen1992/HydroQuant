@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>水耕蔬菜架估價系統</title>
+<meta name="description" content="輸入場地尺寸，產出水耕蔬菜架材料清單與正式估價單">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231d4a3a'/%3E%3Cpath d='M16 26V14m0 0c0-5 3-7 8-7 0 5-3 7-8 7zm0 4c0-4-2-6-7-6 0 4 2 6 7 6z' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E">
+<style>
+:root{--ink:#1c2622;--mut:#56635d;--rule:#d3dbd7;--bg:#f5f7f6;--ac:#1d4a3a;--acl:#e4eee9;--bad:#b3261e}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.6 "PingFang TC","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;color:var(--ink);background:var(--bg);font-variant-numeric:tabular-nums}
+header{background:var(--ac);color:#fff;padding:16px 20px}h1{margin:0;font-size:20px}header p{margin:2px 0 0;font-size:13px;opacity:.85}
+.w{max-width:960px;margin:0 auto;padding:0 16px}
+nav ol{display:flex;gap:8px;list-style:none;margin:16px 0;padding:0}nav li{flex:1}
+nav button{width:100%;background:none;border:0;border-bottom:3px solid var(--rule);border-radius:0;padding:8px 4px;color:var(--mut);font-weight:600;text-align:left}
+nav button.done{border-color:#7fa595;color:var(--ac)}nav button[aria-current=step]{border-color:var(--ac);color:var(--ac)}
+section{background:#fff;border:1px solid var(--rule);border-radius:8px;padding:20px;margin-bottom:16px}
+h2{font-size:18px;margin:0 0 4px}.m{color:var(--mut);font-size:13px;margin:0 0 14px}
+button{font:inherit;cursor:pointer;border:1px solid var(--ac);background:#fff;color:var(--ac);border-radius:6px;padding:8px 14px}
+button.p{background:var(--ac);color:#fff}button.s{padding:2px 8px;border-color:#8a9690;color:var(--ink)}
+:focus-visible{outline:3px solid #2f7dd1;outline-offset:2px}
+input,select{font:inherit;border:1px solid #8a9690;border-radius:6px;padding:7px 9px;width:100%;background:#fff;color:var(--ink)}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:3px}.h{font-weight:400;color:var(--mut);font-size:12px;display:block}
+.g{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));margin-top:18px;border-top:1px solid var(--rule)}.stats div{padding-top:12px;font-size:13px;color:var(--mut)}.stats b{display:block;font-size:26px;color:var(--ink)}
+#errs{color:var(--bad);font-size:13px;margin-top:10px;min-height:1.2em}
+.note{background:var(--acl);border-left:4px solid var(--ac);padding:10px 14px;margin:14px 0;font-size:14px}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:8px 10px;border-bottom:1px solid var(--rule);text-align:left}th{border-bottom:2px solid var(--ink);font-size:13px;white-space:nowrap}
+.r{text-align:right}.c{text-align:center}td input{padding:5px 7px}input.q{width:78px;text-align:right}input.u{width:56px}
+.ex{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-top:16px}
+.bar{position:sticky;bottom:0;background:#fff;border-top:2px solid var(--ac);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:16px -20px -20px}
+.bar b{font-size:22px}.act{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;margin-top:16px}
+#toast{position:fixed;right:16px;bottom:80px;background:var(--ink);color:#fff;padding:10px 16px;border-radius:6px;visibility:hidden;z-index:9}#toast.on{visibility:visible}
+.doc h3{font-size:22px;margin:0;color:var(--ac)}.top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:16px}
+.f{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:14px}.f span{white-space:nowrap;color:var(--mut);min-width:5.5em}.f input{border:0;border-bottom:1px dashed #8a9690;border-radius:0;padding:2px 4px;min-width:14em}
+.two{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-bottom:16px}
+.sum{display:flex;flex-wrap:wrap;gap:20px;margin-top:16px;justify-content:space-between}.nt{flex:1 1 320px;font-size:13px}.nt p{margin:4px 0}
+.tt{flex:0 1 280px}.tt div{display:flex;justify-content:space-between;padding:4px 0}.tt .g2{border-top:2px solid var(--ink);font-size:18px;font-weight:700}
+.sig{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:36px;font-size:14px}.sig div{border-bottom:1px solid var(--ink);padding-bottom:36px}
+@media print{header,nav,.np,.bar,#s1,#s2,#toast{display:none!important}body{background:#fff}section{border:0;padding:0}.tw{overflow:visible}input{border:0!important;padding:0!important}tr{break-inside:avoid}thead{display:table-header-group}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{margin:14mm}}
+</style>
+</head>
+<body>
+<header><div class="w"><h1>水耕蔬菜架估價系統</h1><p>輸入場地尺寸，取得材料清單與正式估價單</p></div></header>
+<nav class="w"><ol>
+<li><button data-s="1">1　場地與配置</button></li>
+<li><button data-s="2">2　材料與成本</button></li>
+<li><button data-s="3">3　正式估價單</button></li>
+</ol></nav>
+<main class="w">
+<div id="toast" role="status" aria-live="polite"></div>
+
+<section id="s1">
+<h2>場地尺寸與栽培配置</h2>
+<p class="m">依走道、4 米標準管材裁切計算。單支種植管長度 = 場地長度 − 0.6m（前後維修空間）。</p>
+<div class="g">
+<div><label for="L">場地長度 (m)</label><input id="L" type="number" inputmode="decimal" step="0.1" value="4.6"></div>
+<div><label for="W">場地寬度 (m)</label><input id="W" type="number" inputmode="decimal" step="0.1" value="3.2"></div>
+<div><label for="H">可用高度 (m)</label><input id="H" type="number" inputmode="decimal" step="0.1" value="2.4"><span class="h">鐵架限高 1.5m，固定 2 層</span></div>
+</div>
+<div class="g">
+<div><label for="rw">單組鐵架寬度 (m)</label><input id="rw" type="number" inputmode="decimal" step="0.1" value="0.8"></div>
+<div><label for="aw">作業走道寬度 (m)</label><input id="aw" type="number" inputmode="decimal" step="0.1" value="0.7"></div>
+<div><label for="rc">鐵架組數</label><input id="rc" type="number" inputmode="numeric" step="1" min="1" max="50" value="2"><span class="h" id="hint"></span></div>
+<div><label for="pp">每層種植管數</label><select id="pp"><option value="1">1 支（靠牆／狹長空間）</option><option value="2" selected>2 支（標準）</option><option value="3">3 支（寬鬆通風）</option><option value="4">4 支（高密度）</option></select></div>
+<div><label for="hs">定植孔間距</label><select id="hs"><option value="15">15 cm（小白菜、青江菜）</option><option value="20" selected>20 cm（葉菜、萵苣）</option><option value="25">25 cm（大型包葉菜）</option></select></div>
+</div>
+<div id="errs" role="alert"></div>
+<div class="stats">
+<div>鐵架組數<b id="pr">–</b></div><div>栽培層數<b id="pl">–</b></div>
+<div>單支管長 (m)<b id="pn">–</b></div><div>定植孔數<b id="ph">–</b></div>
+</div>
+<p class="m" id="eff" style="margin-top:10px"></p>
+<div class="act" style="justify-content:flex-end"><button class="p" data-s="2">下一步：材料與成本</button></div>
+</section>
+
+<section id="s2" hidden>
+<h2>材料明細與成本</h2>
+<p class="m">單價會自動存在這個瀏覽器；清除瀏覽器資料後需重新輸入。尚未輸入的單價顯示 $0。</p>
+<div class="note" id="en"></div>
+<div class="tw"><table>
+<thead><tr><th>類別</th><th>材料及規格</th><th class="r">數量</th><th>單位</th><th class="r">單價 (NTD)</th><th class="r">小計</th><th><span class="np">刪除</span></th></tr></thead>
+<tbody id="bb"></tbody>
+</table></div>
+<div class="act" style="justify-content:flex-start"><button id="add">新增材料項目</button></div>
+<div class="ex">
+<div><label for="lab">施工與配管工資 (NTD)</label><input id="lab" type="number" inputmode="numeric" min="0" step="500" value="4500"></div>
+<div><label for="mk">利潤加成 (%)</label><input id="mk" type="number" inputmode="decimal" min="0" step="1" value="0"><span class="h">套用在報價單單價，客戶看不到成本價</span></div>
+<div><label for="tx">營業稅</label><select id="tx"><option value="0">0%（未稅）</option><option value="0.05" selected>5%（外加）</option></select></div>
+</div>
+<div class="bar"><span>材料成本 <span id="cost">$0</span></span><span>預估總金額 <b id="grand">$0</b></span></div>
+<div class="act"><button data-s="1">返回修改場地</button><button class="p" data-s="3">下一步：產出估價單</button></div>
+</section>
+
+<section id="s3" hidden>
+<div class="act np" style="margin:0 0 16px"><button data-s="2">返回修改數量與單價</button>
+<span style="display:flex;gap:8px;flex-wrap:wrap"><button id="csv">匯出 CSV</button><button id="cpy">複製文字報價單</button><button class="p" id="prt">列印／另存 PDF</button></span></div>
+<div class="doc">
+<div class="top">
+<div><h3>耕顧農場工程估價單</h3>
+<div class="f"><span>統編：</span><input id="ct" placeholder="請輸入統編" aria-label="統編"></div>
+<div class="f"><span>連絡電話：</span><input id="cph" placeholder="請輸入電話" aria-label="公司電話"></div>
+<div class="f"><span>信箱：</span><input id="ce" placeholder="請輸入信箱" aria-label="公司信箱"></div></div>
+<div style="font-size:14px">報價日期：<b id="qd"></b></div>
+</div>
+<div class="two">
+<div><b>客戶資料</b>
+<div class="f"><span>名稱：</span><input id="cn" placeholder="請輸入客戶名稱" aria-label="客戶名稱"></div>
+<div class="f"><span>連絡電話：</span><input id="clp" placeholder="請輸入電話" aria-label="客戶電話"></div>
+<div class="f"><span>信箱：</span><input id="cle" placeholder="請輸入信箱" aria-label="客戶信箱"></div></div>
+<div><b>場地規格</b>
+<div class="f"><span>場地尺寸：</span><input id="qdim" aria-label="場地尺寸"></div>
+<div class="f"><span>鐵架配置：</span><input id="qrk" aria-label="鐵架配置"></div>
+<div class="f"><span>定植孔數：</span><input id="qho" aria-label="定植孔數"></div></div>
+</div>
+<div class="tw"><table>
+<thead><tr><th class="c">項次</th><th>材料及規格</th><th class="r">數量</th><th class="c">單位</th><th class="r">單價</th><th class="r">複價 (NTD)</th></tr></thead>
+<tbody id="qb"></tbody></table></div>
+<div class="sum">
+<div class="nt"><b>備註事項</b>
+<div id="nts" contenteditable="true" role="textbox" aria-label="備註事項，可編輯">
+<p>1. 報價效期：自報價日起 30 日，至 <span id="vu"></span>。</p>
+<p>2. 稅務說明：<span id="taxnote"></span></p>
+<p>3. 交貨與安裝：報價含基本運費及現場組裝定位（限一樓或電梯可達之樓層，無電梯搬運費另計）。</p>
+<p>4. 教育訓練：完工當日提供 1 次現場設備操作與種植維護教學（約 40 分鐘）。</p>
+<p>5. 保固條款：自驗收合格日起算，架體結構及循環馬達享非人為損壞保固 1 年；定植海綿、營養液等消耗品，以及天災、人為操作不當不在保固範圍內。</p>
+<p>6. 付款方式：確認訂購後支付 40% 訂金，餘款 60% 於驗收完成並開立發票後 30 日內結清。</p>
+</div></div>
+<div class="tt">
+<div><span>材料設備小計</span><span id="qm"></span></div>
+<div><span>施工與配管工資</span><span id="ql"></span></div>
+<div><span>營業稅 (<span id="qtl"></span>)</span><span id="qt"></span></div>
+<div class="g2"><span>總計 (NTD)</span><span id="qg"></span></div>
+</div></div>
+<div class="sig"><div>承攬廠商簽章</div><div>客戶確認簽章</div></div>
+</div>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id),
+esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),
+fmt=n=>'$'+Math.round(n).toLocaleString('zh-TW'),
+ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const K='hydroquant.v2:',KEYS=['pipe4m','rackSet','waterTank','chiller','controlBox','fittings','netCups'];
+const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(K+k))??d}catch{return d}};
+const sv=(k,v)=>{try{localStorage.setItem(K+k,JSON.stringify(v))}catch{}};
+const saved=ld('prices',{}),prices={};
+KEYS.forEach(k=>prices[k]=Number.isFinite(saved[k])&&saved[k]>=0?saved[k]:0);
+const S={bom:[],dirty:false,snap:null,manual:false,sig:''};
+let tm;
+function toast(m){const b=$('toast');b.textContent=m;b.classList.add('on');clearTimeout(tm);tm=setTimeout(()=>b.classList.remove('on'),3500)}
+
+function read(){
+  const e=[],f=(id,n,lo,hi)=>{const v=parseFloat($(id).value);if(!(v>=lo&&v<=hi)){e.push(n+'需介於 '+lo+' 到 '+hi);return null}return v};
+  const p={L:f('L','場地長度',1.5,50),W:f('W','場地寬度',1,50),H:f('H','場地高度',1.5,6),rw:f('rw','鐵架寬度',0.5,1.5),aw:f('aw','走道寬度',0.5,1.2),pp:+$('pp').value,hs:+$('hs').value};
+  $('errs').textContent=e.join('；');
+  return e.length?null:p;
+}
+function calc(p){
+  const uw=Math.max(p.rw,p.W-.2),rec=Math.max(1,1+Math.floor((uw-p.rw)/(p.rw+p.aw)+1e-9));
+  let racks=rec;
+  if(S.manual)racks=Math.min(50,Math.max(1,parseInt($('rc').value)||1));else $('rc').value=rec;
+  $('hint').textContent=racks===rec?'符合空間建議':'空間建議 '+rec+' 組';
+  const layers=2,cm=Math.max(100,Math.round((p.L-.6)*100)),len=cm/100,runs=racks*layers*p.pp,full=Math.floor(cm/400),rem=cm%400;
+  let raw=runs*full,note='每支種植管 '+len+'m。';
+  if(rem){const per=Math.floor(400/rem);raw+=Math.ceil(runs/per);
+    note+=full?'超過 4m：每支用 '+full+' 根整管加 '+rem+'cm 接管，以直通接頭連接。':'1 根 4m 管可裁 '+per+' 支。'}
+  else note+='每支剛好 1 根整管。';
+  const holes=runs*(Math.floor(Math.max(0,cm-20)/p.hs)+1);
+  return{racks,layers,len,runs,raw,holes,note,eff:Math.round(runs*cm/(raw*400)*100),water:Math.max(100,Math.ceil(holes*.35/50)*50)};
+}
+function prev(){
+  const p=read();if(!p)return null;const m=calc(p);
+  $('pr').textContent=m.racks;$('pl').textContent=m.layers;$('pn').textContent=m.len;$('ph').textContent=m.holes;
+  $('eff').textContent='4 米管材利用率 '+m.eff+'%';
+  return{p,m};
+}
+const auto=(p,m)=>[
+  ['pipe4m','主體管材','水耕種植管',m.raw,'根'],
+  ['rackSet','結構支架','水耕層架組',m.racks,'組'],
+  ['waterTank','核心設備','不透光循環儲水桶（含浮球補水閥）',1,'座'],
+  ['chiller','核心設備','恆溫製冷機（純鈦盤管）',1,'台'],
+  ['controlBox','動力環控','智慧控制箱（含變頻水泵、間歇循環定時器）',1,'組'],
+  ['fittings','給排水件','給排水管件及閥類',m.runs,'套'],
+  ['netCups','栽培耗材','定植籃＋育苗海綿組',m.holes,'組']
+].map(([key,cat,name,qty,unit])=>({key,cat,name,qty,unit,price:prices[key]}));
+
+function go(n){
+  if(n>1){
+    const r=prev();
+    if(!r){toast('請先修正步驟一的欄位');return go(1)}
+    const sig=JSON.stringify(r);
+    if(!S.bom.length||sig!==S.sig){
+      const keep=S.bom.length&&S.dirty&&!confirm('尺寸已變更。重算會覆蓋你手動修改的數量與名稱（自訂項目會保留）。要重算嗎？');
+      if(!keep){S.bom=auto(r.p,r.m).concat(S.bom.filter(x=>x.custom));S.snap=r;S.sig=sig;S.dirty=false}
+    }
+  }
+  [1,2,3].forEach(i=>$('s'+i).hidden=i!==n);
+  document.querySelectorAll('nav button').forEach((b,i)=>{b.setAttribute('aria-current',i+1===n?'step':'false');b.classList.toggle('done',i+1<n)});
+  if(n===2)renderBOM();
+  if(n===3){renderQuote();const z=S.bom.filter(x=>!x.price).length;if(z)toast('有 '+z+' 項單價為 $0，請確認')}
+  scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+}
+function renderBOM(){
+  $('bb').innerHTML=S.bom.map((x,i)=>`<tr><td>${esc(x.cat)}</td>
+<td><input data-i="${i}" data-f="name" aria-label="材料規格" placeholder="請輸入材料規格" value="${esc(x.name)}"></td>
+<td class="r" style="white-space:nowrap"><button class="s" data-a="-" data-i="${i}" aria-label="減少數量">−</button> <input class="q" type="number" min="0" step="1" inputmode="decimal" data-i="${i}" data-f="qty" aria-label="數量" value="${x.qty}"> <button class="s" data-a="+" data-i="${i}" aria-label="增加數量">＋</button></td>
+<td><input class="u" data-i="${i}" data-f="unit" aria-label="單位" value="${esc(x.unit)}"></td>
+<td class="r"><input class="q" type="number" min="0" step="10" inputmode="numeric" data-i="${i}" data-f="price" aria-label="單價" value="${x.price}"></td>
+<td class="r" id="sub${i}">${fmt(x.qty*x.price)}</td>
+<td><button class="s np" data-a="x" data-i="${i}" aria-label="刪除此項目">✕</button></td></tr>`).join('');
+  const m=S.snap.m;
+  $('en').innerHTML='<b>裁切分析：</b>'+esc(m.note)+' 總定植 <b>'+m.holes+'</b> 株，建議儲水桶有效水量 <b>'+m.water+'</b> 公升，水泵建議運轉 15 分、休眠 15 分間歇循環。';
+  tot();
+}
+function tot(){
+  const mk=Math.max(0,parseFloat($('mk').value)||0)/100,rate=+$('tx').value,lab=Math.max(0,parseFloat($('lab').value)||0);
+  const cost=S.bom.reduce((a,x)=>a+x.qty*x.price,0);
+  const rows=S.bom.map(x=>{const up=Math.round(x.price*(1+mk));return{...x,up,sub:x.qty*up}});
+  const mat=rows.reduce((a,r)=>a+r.sub,0),pre=mat+lab,tax=Math.round(pre*rate);
+  $('cost').textContent=fmt(cost);$('grand').textContent=fmt(pre+tax);
+  return{rows,mat,lab,rate,tax,grand:pre+tax};
+}
+function renderQuote(){
+  const{p,m}=S.snap,t=tot(),d=new Date(),v=new Date(d);v.setDate(v.getDate()+30);
+  $('qd').textContent=ymd(d);$('vu').textContent=ymd(v);
+  $('qdim').value=p.L+'m（長）× '+p.W+'m（寬）× '+p.H+'m（高）';
+  $('qrk').value=m.racks+' 組 × '+m.layers+' 層';$('qho').value=m.holes+' 孔';
+  $('qb').innerHTML=t.rows.map((r,i)=>`<tr><td class="c">${i+1}</td><td><input data-i="${i}" aria-label="材料及規格" value="${esc(r.name)}"></td><td class="r">${r.qty}</td><td class="c">${esc(r.unit)}</td><td class="r">${fmt(r.up)}</td><td class="r">${fmt(r.sub)}</td></tr>`).join('');
+  const pct=Math.round(t.rate*100)+'%';
+  $('qm').textContent=fmt(t.mat);$('ql').textContent=fmt(t.lab);$('qt').textContent=fmt(t.tax);$('qtl').textContent=pct;$('qg').textContent=fmt(t.grand);
+  $('taxnote').textContent=t.rate?'營業稅 '+pct+' 已計入總計金額，可開立三聯式統一發票供貴單位核銷。':'以上報價為未稅價，營業稅另計，可開立三聯式統一發票供貴單位核銷。';
+}
+
+// 事件
+document.addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(b)go(+b.dataset.s)});
+['L','H','pp','hs'].forEach(id=>$(id).addEventListener('input',prev));
+['W','rw','aw'].forEach(id=>$(id).addEventListener('input',()=>{S.manual=false;prev()}));
+$('rc').addEventListener('input',()=>{S.manual=true;prev()});
+['lab','mk','tx'].forEach(id=>$(id).addEventListener('input',tot));
+$('bb').addEventListener('change',e=>{
+  const t=e.target,f=t.dataset.f;if(!f)return;const i=+t.dataset.i,x=S.bom[i];
+  if(f==='name'||f==='unit')x[f]=t.value;
+  else{x[f]=Math.max(0,parseFloat(t.value)||0);t.value=x[f];if(f==='price'&&!x.custom){prices[x.key]=x[f];sv('prices',prices)}}
+  if(f!=='price')S.dirty=true;
+  $('sub'+i).textContent=fmt(x.qty*x.price);tot();
+});
+$('bb').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;const i=+b.dataset.i,a=b.dataset.a;
+  if(a==='x'){if(S.bom.length<2)return toast('至少保留一項');S.bom.splice(i,1)}
+  else S.bom[i].qty=Math.max(0,S.bom[i].qty+(a==='+'?1:-1));
+  S.dirty=true;renderBOM();
+});
+$('add').onclick=()=>{S.bom.push({key:'c'+Date.now(),cat:'自訂項目',name:'',qty:1,unit:'式',price:0,custom:true});renderBOM();
+  const r=$('bb').lastElementChild;r&&r.querySelector('input').focus()};
+$('qb').addEventListener('change',e=>{const t=e.target;if(t.dataset.i===undefined)return;S.bom[+t.dataset.i].name=t.value;S.dirty=true});
+['ct','cph','ce'].forEach(id=>{$(id).value=(ld('co',{}))[id]||'';$(id).addEventListener('input',()=>{const o={};['ct','cph','ce'].forEach(k=>o[k]=$(k).value);sv('co',o)})});
+
+$('prt').onclick=()=>{
+  const miss=[['ct','統編'],['cph','公司電話'],['ce','公司信箱'],['cn','客戶名稱']].filter(([id])=>!$(id).value.trim()).map(x=>x[1]);
+  if(miss.length&&!confirm('尚未填寫：'+miss.join('、')+'。仍要列印嗎？'))return;
+  print();
+};
+const cs=v=>{let s=String(v);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};
+$('csv').onclick=()=>{
+  const t=tot(),L=['項次,類別,材料及規格,數量,單位,單價(NTD),複價(NTD)'];
+  t.rows.forEach((r,i)=>L.push([i+1,cs(r.cat),cs(r.name),r.qty,cs(r.unit),r.up,r.sub].join(',')));
+  L.push(',,,,,材料設備小計,'+t.mat,',,,,,施工與配管工資,'+t.lab,',,,,,營業稅,'+t.tax,',,,,,總計金額,'+t.grand);
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+L.join('\r\n')],{type:'text/csv;charset=utf-8'}));
+  a.download='估價單_'+$('qd').textContent+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('已下載 CSV');
+};
+$('cpy').onclick=async()=>{
+  const t=tot();
+  let s='【耕顧農場工程估價單】\n統編：'+$('ct').value+'｜電話：'+$('cph').value+'｜信箱：'+$('ce').value+'\n報價日期：'+$('qd').textContent+'\n客戶：'+$('cn').value+'\n場地：'+$('qdim').value+'\n----------------\n';
+  t.rows.forEach((r,i)=>s+=(i+1)+'. '+r.name+'\n   '+r.qty+r.unit+' × '+fmt(r.up)+' = '+fmt(r.sub)+'\n');
+  s+='----------------\n材料設備小計：'+fmt(t.mat)+'\n施工與配管工資：'+fmt(t.lab)+'\n營業稅：'+fmt(t.tax)+'\n總計：'+fmt(t.grand)+' NTD';
+  try{await navigator.clipboard.writeText(s);toast('已複製文字報價單')}catch{toast('複製失敗，請改用匯出 CSV 或列印')}
+};
+document.addEventListener('DOMContentLoaded',()=>{prev();go(1)});
+</script>
+</body>
+</html>
