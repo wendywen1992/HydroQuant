@@ -98,7 +98,7 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:3px}.h{font-wei
 <span style="display:flex;gap:8px;flex-wrap:wrap"><button id="csv">匯出 CSV</button><button id="cpy">複製文字報價單</button><button class="p" id="prt">列印／另存 PDF</button></span></div>
 <div class="doc">
 <div class="top">
-<div><h3>耕顧農場工程估價單</h3>
+<div><h3>李小農農產行工程估價單</h3>
 <div class="f"><span>統編：</span><input id="ct" placeholder="請輸入統編" aria-label="統編"></div>
 <div class="f"><span>連絡電話：</span><input id="cph" placeholder="請輸入電話" aria-label="公司電話"></div>
 <div class="f"><span>信箱：</span><input id="ce" placeholder="請輸入信箱" aria-label="公司信箱"></div></div>
@@ -273,7 +273,7 @@ $('csv').onclick=()=>{
 };
 $('cpy').onclick=async()=>{
   const t=tot();
-  let s='【耕顧農場工程估價單】\n統編：'+$('ct').value+'｜電話：'+$('cph').value+'｜信箱：'+$('ce').value+'\n報價日期：'+$('qd').textContent+'\n客戶：'+$('cn').value+'\n場地：'+$('qdim').value+'\n----------------\n';
+  let s='【李小農農產行工程估價單】\n統編：'+$('ct').value+'｜電話：'+$('cph').value+'｜信箱：'+$('ce').value+'\n報價日期：'+$('qd').textContent+'\n客戶：'+$('cn').value+'\n場地：'+$('qdim').value+'\n----------------\n';
   t.rows.forEach((r,i)=>s+=(i+1)+'. '+r.name+'\n   '+r.qty+r.unit+' × '+fmt(r.up)+' = '+fmt(r.sub)+'\n');
   s+='----------------\n材料設備小計：'+fmt(t.mat)+'\n施工與配管工資：'+fmt(t.lab)+'\n營業稅：'+fmt(t.tax)+'\n總計：'+fmt(t.grand)+' NTD';
   try{await navigator.clipboard.writeText(s);toast('已複製文字報價單')}catch{toast('複製失敗，請改用匯出 CSV 或列印')}
