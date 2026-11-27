@@ -263,7 +263,7 @@ function updDate(){
 function renderQuote(){
   const{p,m}=S.snap,t=tot();
   updDate();
-  $('qdim').value=p.L+'m（長）× '+p.W+'m（寬）× '+p.H+'m（高）';
+  $('qdim').value=p.L+'m長× '+p.W+'m寬× '+p.H+'m高';
   $('qrk').value=m.racks+' 組 × '+m.layers+' 層';$('qho').value=m.holes+' 孔';
   $('qb').innerHTML=t.rows.map((r,i)=>`<tr><td class="c">${i+1}</td><td><input data-i="${i}" aria-label="材料及規格" value="${esc(r.name)}"></td><td class="r">${r.qty}</td><td class="c">${esc(r.unit)}</td><td class="r">${fmt(r.up)}</td><td class="r">${fmt(r.sub)}</td></tr>`).join('');
   const pct=Math.round(t.rate*100)+'%';
