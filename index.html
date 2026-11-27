@@ -50,13 +50,8 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:3px}.h{font-wei
 .sum{display:flex;flex-wrap:wrap;gap:20px;margin-top:16px;justify-content:space-between}.nt{flex:1 1 320px;font-size:13px}.nt p{margin:4px 0}
 .tt{flex:0 1 280px}.tt div{display:flex;justify-content:space-between;padding:4px 0}.tt .g2{border-top:2px solid var(--ink);font-size:18px;font-weight:700}
 .sig{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:36px;font-size:14px}.sig div{border-bottom:1px solid var(--ink);padding-bottom:36px}
-@media print{header,nav,.np,.bar,#s1,#s2,#toast,.lbox.empty{display:none!important}body{background:#fff}section{border:0;padding:0}.tw{overflow:visible}input{border:0!important;padding:0!important}input[type=date]::-webkit-calendar-picker-indicator{display:none}tr{break-inside:avoid}thead{display:table-header-group}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{size:A4;margin:0}.doc input{display:none!important}.doc .pv{display:block!important;border:0!important;padding:0!important;min-width:0!important;white-space:normal;overflow-wrap:anywhere}.doc .f .pv{display:inline!important}
+@media print{header,nav,.np,.bar,#s1,#s2,#toast,.lbox.empty{display:none!important}body{background:#fff}section{border:0;padding:0}.tw{overflow:visible}input{border:0!important;padding:0!important}input[type=date]::-webkit-calendar-picker-indicator{display:none}tr{break-inside:avoid}thead{display:table-header-group}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{size:A4;margin:14mm;@top-left{content:""}@top-center{content:""}@top-right{content:""}@bottom-left{content:""}@bottom-center{content:""}@bottom-right{content:""}}.doc input{display:none!important}.doc .pv{display:block!important;border:0!important;padding:0!important;min-width:0!important;white-space:normal;overflow-wrap:anywhere}.doc .f .pv{display:inline!important}
 main.w{max-width:none;padding:0}
-section{margin:0}
-.doc{display:table;width:100%}
-.pgh{display:table-header-group}.pgf{display:table-footer-group}.pgb{display:table-row-group}
-.pgh:before,.pgf:before{content:"";display:block;height:14mm}
-.pgi{padding:0 14mm}
 .top{flex-wrap:nowrap;gap:12px;break-inside:avoid}
 .brand{flex:1 1 auto;min-width:0;gap:12px}
 .brand>div:last-child{flex:1 1 auto;min-width:0}
@@ -70,7 +65,6 @@ section{margin:0}
 .sum{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:20px;align-items:start;break-inside:avoid}
 .tt{flex:none;width:250px}}
 .pv{display:none}
-.pgh,.pgf{display:none}
 #nts>div{margin:4px 0}
 </style>
 </head>
@@ -131,8 +125,6 @@ section{margin:0}
 <div class="act np" style="margin:0 0 16px"><button data-s="2">返回修改數量與單價</button>
 <span style="display:flex;gap:8px;flex-wrap:wrap"><button id="csv">匯出 CSV</button><button id="cpy">複製文字報價單</button><button class="p" id="prt">列印／另存 PDF</button></span></div>
 <div class="doc">
-<div class="pgh"></div>
-<div class="pgb"><div class="pgi">
 <div class="top">
 <div class="brand">
 <div id="lbox" class="lbox empty">
@@ -141,7 +133,7 @@ section{margin:0}
 <button type="button" id="lrm" class="s lrm np" aria-label="移除 LOGO" title="移除 LOGO">✕</button>
 <input id="lfile" type="file" accept="image/*" hidden>
 </div>
-<div><input id="ti" class="ti" value="工程估價單" aria-label="估價單標題">
+<div><input id="ti" class="ti" value="李小農農產行工程估價單" aria-label="估價單標題">
 <div class="f"><span>統編：</span><input id="ct" placeholder="請輸入統編" aria-label="統編"></div>
 <div class="f w2"><span>連絡電話：</span><input id="cph" class="ph" placeholder="請輸入電話" aria-label="公司電話"><span class="l2">信箱：</span><input id="ce" class="em" placeholder="請輸入信箱" aria-label="公司信箱"></div></div>
 </div>
@@ -170,8 +162,6 @@ section{margin:0}
 <div class="g2"><span>總計 (NTD)</span><span id="qg"></span></div>
 </div></div>
 <div class="sig"><div>承攬廠商簽章</div><div>客戶確認簽章</div></div>
-</div></div>
-<div class="pgf"></div>
 </div>
 </section>
 </main>
